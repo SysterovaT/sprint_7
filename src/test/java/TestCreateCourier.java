@@ -32,6 +32,17 @@ public class TestCreateCourier {
     Response response = sendPostRequestCreateCourier(courier);
     compareStatusCode(response, 201);
     compareResponseData(response);
+    int id = given()
+            .header("Content-type", "application/json")
+            .and()
+            .body(new LoginCourier(courier.getLogin(), courier.getPassword()))
+            .when()
+            .post("/api/v1/courier/login").then().extract().body().path("id");
+
+    given()
+            .header("Content-type", "application/json")
+            .when()
+            .delete("/api/v1/courier/"+id);
   }
   
   @Step("Send POST request to /api/v1/courier")
@@ -45,7 +56,7 @@ public class TestCreateCourier {
   }
   
   @Step("Send POST request to /api/v1/courier from JSON")
-  public Response sendPostRequestCreateCourierJson(Courier courier, String json){
+  public Response sendPostRequestCreateCourierJson(String json){
     return given()
         .header("Content-type", "application/json")
         .and()
@@ -80,9 +91,7 @@ public class TestCreateCourier {
   
   @Test
   public void testSendNotRequiredFieldCourier() {
-    Courier courier = new Courier("" , "test", "test");
-    Response response = sendPostRequestCreateCourierJson(courier
-        , "{}");
+    Response response = sendPostRequestCreateCourierJson("{}");
     compareStatusCode(response, 400);
   }
   

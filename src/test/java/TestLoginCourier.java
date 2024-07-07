@@ -1,12 +1,9 @@
-import io.qameta.allure.Description;
 import io.qameta.allure.Step;
-import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Random;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -54,22 +51,10 @@ public class TestLoginCourier {
     response.then().assertThat().body("message", equalTo(message));
   }
   
-  @Step("Send POST request to /api/v1/courier")
-  public Response sendPostRequestCreateCourier(Courier courier){
-    return given()
-        .header("Content-type", "application/json")
-        .and()
-        .body(courier)
-        .when()
-        .post("/api/v1/courier");
-  }
-  
   @Test
   public void testLoginCourierStatusCode() {
     //  курьер может авторизоваться;
-    Random r = new Random();
-    Courier courierCreate = new Courier("test" + r.nextInt(), "test", "test");
-    Response responseCreateCourier = sendPostRequestCreateCourier(courierCreate);
+    Courier courierCreate = new Courier("test", "test", "test");
     LoginCourier courier = new LoginCourier(courierCreate.getLogin(), courierCreate.getPassword());
     Response response = sendPostRequestLoginCourier(courier);
     compareStatusCode(response, 200);
@@ -110,9 +95,7 @@ public class TestLoginCourier {
   @Test
   public void testLoginCourierBody() {
     //  успешный запрос возвращает id.
-    Random r = new Random();
-    Courier courierCreate = new Courier("test" + r.nextInt(), "test", "test");
-    Response responseCreateCourier = sendPostRequestCreateCourier(courierCreate);
+    Courier courierCreate = new Courier("test" , "test", "test");
     LoginCourier courier = new LoginCourier(courierCreate.getLogin(), courierCreate.getPassword());
     Response response = sendPostRequestLoginCourier(courier);
     compareBodyLoginAccept(response);
